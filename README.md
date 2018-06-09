@@ -4,4 +4,4 @@
 ### exam2.py is used for blast via Biopython and filter contigs according to e-value threshold.
 
 Usage:
-``` python3 exam2.py -i [input_fasta] -o [output_fasta] -e [e-value threshold] ```
+``` python3 exam2.py -i [input_fasta] -a [output_fasta_for_aligned_contigs] -na [output_fasta_not_aligned_contigs] -e [e-value threshold] ```
