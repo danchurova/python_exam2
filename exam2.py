@@ -6,12 +6,14 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Fasta')
     parser.add_argument('-i', '--input', help='input fasta file', type=str, required=True)
-    parser.add_argument('-o', '--output', help='output fasta file', type=str, required=True)
+    parser.add_argument('-a', '--aligned_output', help='output fasta file with contigs aligned with e-value threshold', type=str, required=True)
+    parser.add_argument('-na', '--not_aligned_output', help='output fasta file with contigs not aligned with e-value threshold', type=str, required=True)
     parser.add_argument('-e', '--evalue', help='required e-value', type =float, required=True)
 
     args = parser.parse_args()
     input_file = args.input
-    output_file = args.output
+    aligned = args.aligned_output
+    not_aligned = args.not_aligned_output
     e_value = args.evalue
 
 
@@ -21,12 +23,12 @@ if __name__ == '__main__':
             read = str(record.seq)
             results = NCBIWWW.qblast('blastn', 'nt', read, alignments=1, descriptions=1)
             blast_record = NCBIXML.read(results)
-            filtered_results = []
             for alignment in blast_record.alignments:
                 for hsp in alignment.hsps:
-                    if hsp.expect <= e_value:
-                        filtered_results.append('sequence:' + str(alignment.title)+'\nlength:' + str(alignment.length) + '\n e value:' + str(hsp.expect))
-
-            with open(output_file, 'w') as output_result:
-                for record in filtered_results:
-                    output_result.write(record)
+                    if hsp.expect < e_value:
+                        with open(aligned, 'w') as aligned_output:
+                            aligned_output.write(alignment)
+                    else:
+                        with open(not_aligned, 'w') as not_aligned_output:
+                            not_aligned_output.write(alignment)
+                    print(hsp.expect)
