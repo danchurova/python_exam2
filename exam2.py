@@ -16,6 +16,16 @@ if __name__ == '__main__':
     not_aligned = args.not_aligned_output
     e_value = args.evalue
 
+    def filter(blast_record, record):
+        for alignment in blast_record.alignments:
+            for hsp in alignment.hsps:
+                if hsp.expect < e_value:
+                    with open(aligned, 'w') as aligned_output:
+                        aligned_output.write(str(record))
+                    return
+        with open(not_aligned, 'w') as not_aligned_output:
+            not_aligned_output.write(str(record))
+
 
     with open(input_file, 'r') as input_fasta:
         alignments_dict = {}
@@ -23,12 +33,4 @@ if __name__ == '__main__':
             read = str(record.seq)
             results = NCBIWWW.qblast('blastn', 'nt', read, alignments=1, descriptions=1)
             blast_record = NCBIXML.read(results)
-            for alignment in blast_record.alignments:
-                for hsp in alignment.hsps:
-                    if hsp.expect < e_value:
-                        with open(aligned, 'w') as aligned_output:
-                            aligned_output.write(alignment)
-                    else:
-                        with open(not_aligned, 'w') as not_aligned_output:
-                            not_aligned_output.write(alignment)
-                    print(hsp.expect)
+            filter(blast_record, record)
