@@ -21,10 +21,10 @@ if __name__ == '__main__':
             for hsp in alignment.hsps:
                 if hsp.expect < e_value:
                     with open(aligned, 'w') as aligned_output:
-                        aligned_output.write(str(record))
+                        SeqIO.write(record, "aligned.fasta","fasta")
                     return
         with open(not_aligned, 'w') as not_aligned_output:
-            not_aligned_output.write(str(record))
+            SeqIO.write(record, "not_aligned.fasta", "fasta")
 
 
     with open(input_file, 'r') as input_fasta:
